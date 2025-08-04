@@ -1,1 +1,1 @@
-# cafe
+# AI Cafe
