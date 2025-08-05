@@ -1,7 +1,54 @@
 from sklearn.datasets import load_iris
 import pandas as pd
+from sklearn.model_selection import train_test_split
 
-import pandas as pd
+def X_y_split(df, target_column):
+    """
+    Split a pandas DataFrame into feature set (X) and target vector (y).
+
+    Parameters
+    ----------
+    df : pandas.DataFrame
+        The input DataFrame containing both features and target column.
+    target_column : str
+        The name of the column to be used as the target variable.
+
+    Returns
+    -------
+    X : pandas.DataFrame
+        DataFrame containing all columns except the target column.
+    y : pandas.Series
+        Series containing values from the target column.
+
+    Raises
+    ------
+    ValueError
+        If target_column is not provided.
+    KeyError
+        If target_column does not exist in the DataFrame.
+    RuntimeError
+        If an unexpected error occurs during splitting.
+    """
+    
+    # Check if target_column is provided
+    if target_column is None:
+        raise ValueError("target_column must be provided.")
+    
+    # Check if target_column exists in the DataFrame
+    if target_column not in df.columns:
+        raise KeyError(f"Column '{target_column}' not found in DataFrame.")
+    
+    try:
+        # Drop the target column to create the feature set (X)
+        X = df.drop(columns=[target_column])
+        # Extract the target column as the target vector (y)
+        y = df[target_column]
+    except Exception as e:
+        # Catch any unexpected error during the split and raise a RuntimeError
+        raise RuntimeError(f"Unexpected error during splitting: {e}")
+    
+    # Return the split feature set and target vector
+    return X, y
 
 def normalize_dataframe(df, columns=None):
     """
@@ -59,18 +106,14 @@ def load_iris_data():
     return df
 
 def main():
-    """
-    Main execution function.
-
-    Loads the Iris dataset and prints the first few rows of the resulting DataFrame.
-    """
-
     # Load the Iris dataset
     df = load_iris_data()
     
     # Normalize the specified columns in the DataFrame (values are between 0 and 1)
     dataset = normalize_dataframe(df, columns=['sepal length (cm)', 'sepal width (cm)', 'petal length (cm)', 'petal width (cm)'])
 
+    # Split the DataFrame into features (X) and target (y)
+    X, y = X_y_split(dataset, target_column='species_name')
 
 if __name__ == "__main__":
     main()
